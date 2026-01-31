@@ -1,0 +1,30 @@
+{
+  "Data Scientist": [
+    "Python",
+    "Statistics",
+    "Machine Learning",
+    "SQL",
+    "Deep Learning"
+  ],
+  "Web Developer": [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "React",
+    "Node.js"
+  ],
+  "ML Engineer": [
+    "Python",
+    "Machine Learning",
+    "Deep Learning",
+    "AWS",
+    "MLOps"
+  ],
+  "Data Analyst": [
+    "Excel",
+    "SQL",
+    "Python",
+    "Power BI",
+    "Statistics"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "Software Engineer": ["Python", "Java", "DSA", "Git", "System Design"],
+  "Full Stack Developer": ["HTML", "CSS", "JavaScript", "React", "Node.js"],
+  "Data Analyst": ["SQL", "Excel", "Python", "Pandas"],
+  "Data Scientist": ["Python", "Statistics", "Machine Learning"],
+  "ML Engineer": ["Python", "Deep Learning", "TensorFlow"],
+  "DevOps Engineer": ["Linux", "Docker", "CI/CD"],
+  "Cloud Engineer": ["AWS", "Azure", "Linux"],
+  "Cyber Security Analyst": ["Networking", "Security Basics"]
+}
