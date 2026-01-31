@@ -1,0 +1,21 @@
+FEATURE ENGINEERING SUMMARY – JOB MARKET ANALYTICS
+
+1. skill_count  
+   Derived by counting the number of skills listed for each job posting.  
+   This feature represents job complexity and skill demand.
+
+2. location_tier  
+   Engineered by classifying job locations into Metro and Non-Metro cities.  
+   Helps analyze geographic concentration of job opportunities.
+
+3. demand_label  
+   Generated based on job frequency and market trends.  
+   Represents overall job demand as Low, Medium, or High.
+
+4. career_risk_score  
+   Computed using demand, volatility, and automation risk.  
+   Indicates long-term career stability.
+
+5. ai_risk_probability  
+   Estimated using skill safety and automation impact.  
+   Represents likelihood of AI replacing the role.

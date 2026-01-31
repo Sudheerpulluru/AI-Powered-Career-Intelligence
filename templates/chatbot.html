@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+{% block title %}AI Assistant | JobAI{% endblock %}
+
+{% block content %}
+
+<style>
+.chat-container {
+  max-width: 900px;
+  height: 650px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-box {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.chat-message {
+  padding: 14px 18px;
+  border-radius: 18px;
+  margin-bottom: 12px;
+  max-width: 78%;
+  line-height: 1.6;
+}
+
+/* ===== CHAT BUBBLES ===== */
+.user {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #ffffff; /* ✅ FIX */
+  margin-left: auto;
+}
+
+.bot {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-soft);
+  color: #eaeaea; /* ✅ FIX */
+}
+
+/* ===== QUICK ACTION BUTTONS (FIXED COLORS) ===== */
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.quick-actions button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: 1px solid var(--border-soft);
+  background: rgba(255,255,255,0.05);
+  color: #ffffff;                 /* ✅ FIX */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-actions button:hover {
+  background: rgba(255,255,255,0.15);
+  color: #ffffff;                 /* ✅ FIX */
+}
+
+/* ===== INPUT ===== */
+.chat-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.chat-input input {
+  flex: 1;
+}
+</style>
+
+<div class="dashboard-header fade-in">
+  <h1>🤖 AI Career Assistant</h1>
+  <p class="text-muted">
+    Context-aware career guidance based on your prediction
+  </p>
+</div>
+
+<section class="panel chat-container fade-in">
+
+  <!-- QUICK ACTIONS -->
+  <div class="quick-actions">
+    <button onclick="preset('career risk')">⚠ Career Risk</button>
+    <button onclick="preset('skills')">🧠 Skill Improvement</button>
+    <button onclick="preset('switch')">🧭 Career Switch</button>
+    <button onclick="preset('ai')">🤖 AI Impact</button>
+  </div>
+
+  <!-- CHAT -->
+  <div class="chat-box" id="chatBox">
+    <div class="chat-message bot">
+      👋 Hi! I’m your <b>JobAI Career Assistant</b>.<br><br>
+      I analyze your:
+      <ul>
+        <li>📊 Job demand</li>
+        <li>⚠ Career risk</li>
+        <li>🧠 Skill gaps</li>
+        <li>🤖 AI automation exposure</li>
+      </ul>
+      to give <b>role-specific guidance</b>.
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="chat-input">
+    <input id="userInput" placeholder="Ask about your career…" />
+    <button class="btn-primary" onclick="sendMessage()">Send</button>
+  </div>
+
+</section>
+
+<script>
+const chatBox = document.getElementById("chatBox");
+const input = document.getElementById("userInput");
+
+/* 🔒 SAFE CONTEXT */
+const context = {
+  role: "{{ session.user_input.get('jobtitle','your role') }}",
+  demand: "{{ session.demand or 'Unknown' }}",
+  risk: "{{ session.career_risk or 'Unknown' }}",
+  ai: {{ session.ai_probability or 0 }},
+  skills: "{{ session.user_input.get('skills','no skills listed') }}"
+};
+
+function add(msg, cls="bot") {
+  const d = document.createElement("div");
+  d.className = "chat-message " + cls;
+  d.innerHTML = msg;
+  chatBox.appendChild(d);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function preset(text) {
+  input.value = text;
+  sendMessage();
+}
+
+function sendMessage() {
+  const q = input.value.trim().toLowerCase();
+  if (!q) return;
+
+  add(input.value, "user");
+  input.value = "";
+
+  if (q.includes("risk")) {
+    add(`
+      ⚠ <b>Career Risk Analysis</b><br><br>
+      Role: <b>${context.role}</b><br>
+      Demand: <b>${context.demand}</b><br><br>
+      Your risk is <b>${context.risk}</b> because demand is 
+      <b>${context.demand}</b> and AI exposure is around 
+      <b>${context.ai}%</b>.<br><br>
+      👉 Reduce risk with <b>deeper skills + specialization</b>.
+    `);
+  }
+
+  else if (q.includes("skill")) {
+    add(`
+      🧠 <b>Skill Improvement Advice</b><br><br>
+      Role: <b>${context.role}</b><br>
+      Current skills:<br>
+      <i>${context.skills}</i><br><br>
+      To improve demand:
+      <ul>
+        <li>Strengthen core technical depth</li>
+        <li>Add one role-defining skill</li>
+        <li>Build real-world projects</li>
+      </ul>
+    `);
+  }
+
+  else if (q.includes("switch")) {
+    const advice =
+      context.demand === "High"
+        ? "✅ Switching now is reasonable."
+        : context.demand === "Medium"
+        ? "⚠ Switch cautiously after skill upgrades."
+        : "❌ Switching now is risky without upskilling.";
+
+    add(`
+      🧭 <b>Career Switch Guidance</b><br><br>
+      Demand: <b>${context.demand}</b><br>
+      AI Risk: <b>${context.ai}%</b><br><br>
+      ${advice}
+    `);
+  }
+
+  else if (q.includes("ai")) {
+    add(`
+      🤖 <b>AI Automation Impact</b><br><br>
+      Estimated automation exposure: <b>${context.ai}%</b><br><br>
+      To stay future-proof:
+      <ul>
+        <li>Shift toward decision-making work</li>
+        <li>Develop system-level thinking</li>
+        <li>Combine domain + technical expertise</li>
+      </ul>
+    `);
+  }
+
+  else {
+    add(`
+      ❓ You can ask about:
+      <ul>
+        <li>Career risk</li>
+        <li>Skill improvement</li>
+        <li>Career switch</li>
+        <li>AI impact</li>
+      </ul>
+    `);
+  }
+}
+</script>
+
+{% endblock %}

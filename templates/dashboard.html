@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | JobAI{% endblock %}
+
+{% block content %}
+
+<style>
+  .center-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ================= HEADER ================= */
+  .dashboard-header {
+    margin-bottom: 24px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 2.1rem;
+    font-weight: 700;
+  }
+
+  .dashboard-header p {
+    margin-top: 6px;
+    color: var(--text-muted);
+  }
+
+  /* ================= KPI ================= */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin: 24px 0 36px;
+  }
+
+  .kpi-card {
+    padding: 22px;
+    border-radius: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+  }
+
+  .kpi-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .kpi-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .kpi-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ================= GRID ================= */
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ================= FORM ================= */
+  .section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 14px;
+  }
+
+  @media (max-width: 700px) {
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  /* ================= PRESETS ================= */
+  .quick-picks {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .quick-picks button {
+    padding: 7px 14px;
+    font-size: 13px;
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-main);
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .quick-picks button.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  /* ================= ACTIONS ================= */
+  .actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 26px;
+    flex-wrap: wrap;
+  }
+
+  .btn-disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .form-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 12px;
+  }
+
+  /* ================= HELPER ================= */
+  .helper-card {
+    padding: 22px;
+    border-radius: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+  }
+
+  .helper-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+  }
+
+  .helper-card li {
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+</style>
+
+<!-- ================= HEADER ================= -->
+<div class="dashboard-header fade-in">
+  <h1>Career Risk Dashboard</h1>
+  <p>Predict demand • Evaluate risk • Make smarter career decisions</p>
+</div>
+
+<div class="center-wrap fade-in">
+
+  <!-- ✅ FIXED KPI CONDITION -->
+  {% if session.get("prediction_done") == True %}
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Job Demand</div>
+      <div class="kpi-value">{{ session.demand }}</div>
+      <div class="kpi-sub">Market demand level</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Career Risk</div>
+      <div class="kpi-value">{{ session.career_risk }}</div>
+      <div class="kpi-sub">Stability & competition</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">AI Exposure</div>
+      <div class="kpi-value">{{ session.ai_probability }}%</div>
+      <div class="kpi-sub">Automation risk (3–5 yrs)</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">Confidence</div>
+      <div class="kpi-value">{{ session.confidence }}%</div>
+      <div class="kpi-sub">Model confidence</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="dashboard-grid">
+
+    <!-- ================= FORM ================= -->
+    <section class="panel">
+      <h2 class="section-title">Job Demand Prediction</h2>
+
+      <div class="quick-picks">
+        <button onclick="preset(this,'data analyst')">Data Analyst</button>
+        <button onclick="preset(this,'data engineer')">Data Engineer</button>
+        <button onclick="preset(this,'software engineer')">Software Engineer</button>
+        <button onclick="preset(this,'ai engineer')">AI Engineer</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Job Title *</label>
+          <input id="jobTitle" placeholder="e.g. Data Engineer">
+        </div>
+
+        <div class="form-group">
+          <label>Location *</label>
+          <input id="location" placeholder="e.g. Bangalore">
+        </div>
+
+        <div class="form-group">
+          <label>Experience Level *</label>
+          <select id="experience">
+            <option value="">Select experience</option>
+            <option value="fresher">Fresher</option>
+            <option value="2-5 years">2–5 years</option>
+            <option value="5+ years">5+ years</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Industry *</label>
+          <input id="industry" placeholder="e.g. Software / Finance">
+        </div>
+
+        <div class="form-group full">
+          <label>Skills *</label>
+          <input id="skills" placeholder="python, sql, aws, spark">
+        </div>
+      </div>
+
+      <p class="form-hint" id="formHint">
+        Fill all required fields to enable prediction.
+      </p>
+
+      <div class="actions">
+        <button class="btn-primary btn-disabled" id="predictBtn" disabled>
+          Predict Career
+        </button>
+        <button class="btn-secondary btn-disabled" id="pdfBtn" disabled onclick="window.print()">
+          Export PDF
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= HELPER ================= -->
+    <aside class="helper-card">
+      <h3>What improves prediction accuracy?</h3>
+      <ul>
+        <li>Clear job title</li>
+        <li>Correct experience</li>
+        <li>Relevant industry</li>
+        <li>Multiple skills</li>
+        <li>Realistic expectations</li>
+      </ul>
+      <p class="text-muted" style="margin-top:10px;font-size:13px;">
+        Tip: Use presets during demo.
+      </p>
+    </aside>
+
+  </div>
+</div>
+
+<!-- ================= SCRIPT (UNCHANGED) ================= -->
+<script>
+const jobTitle = document.getElementById("jobTitle");
+const locationInput = document.getElementById("location");
+const experience = document.getElementById("experience");
+const industry = document.getElementById("industry");
+const skills = document.getElementById("skills");
+
+const predictBtn = document.getElementById("predictBtn");
+const pdfBtn = document.getElementById("pdfBtn");
+const hint = document.getElementById("formHint");
+
+const fields = [jobTitle, locationInput, experience, industry, skills];
+
+function validateForm() {
+  const valid = fields.every(f => f.value.trim() !== "");
+  predictBtn.disabled = !valid;
+  predictBtn.classList.toggle("btn-disabled", !valid);
+  hint.innerText = valid
+    ? "Ready to analyze your career profile."
+    : "Fill all required fields to enable prediction.";
+}
+
+fields.forEach(f => {
+  f.addEventListener("input", validateForm);
+  f.addEventListener("change", validateForm);
+});
+
+function preset(btn, role) {
+  document.querySelectorAll(".quick-picks button")
+    .forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+
+  jobTitle.value = role;
+  industry.value = "software";
+  locationInput.value = "india";
+  experience.value = "2-5 years";
+  skills.value =
+    role.includes("data")
+      ? "sql, python, power bi"
+      : "python, system design";
+
+  validateForm();
+}
+
+predictBtn.addEventListener("click", async () => {
+  predictBtn.innerText = "Analyzing...";
+  predictBtn.disabled = true;
+
+  const payload = {
+    jobtitle: jobTitle.value.trim(),
+    location: locationInput.value.trim(),
+    experience_level: experience.value,
+    industry: industry.value.trim(),
+    required_skills: skills.value.trim()
+  };
+
+  try {
+    const res = await fetch("/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error("Prediction failed");
+    window.location.href = "/analytics";
+
+  } catch (err) {
+    alert("Prediction failed. Check server logs.");
+    predictBtn.innerText = "Predict Career";
+    predictBtn.disabled = false;
+    validateForm();
+  }
+});
+</script>
+
+{% endblock %}

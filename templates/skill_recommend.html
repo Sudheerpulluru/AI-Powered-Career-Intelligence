@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Skill-Based Role Recommendation | JobAI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="logo">🚀</span>
+            <span class="name">JobAI</span>
+        </div>
+
+        <nav class="nav">
+            <a href="/" class="nav-item">🏠 Home</a>
+            <a href="/dashboard" class="nav-item">📊 Dashboard</a>
+            <a href="/analytics" class="nav-item">📈 Analytics</a>
+            <a href="/skill-gap" class="nav-item">🧠 Skill Gap</a>
+            <a href="/skill-recommend" class="nav-item active">🎯 Skill Match</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+        <div class="page-container">
+
+            <h1 class="page-title">Skill-Based Role Recommendation</h1>
+
+            {% if job_query %}
+            <div class="current-query">
+                🔍 <strong>Current Analysis:</strong> {{ job_query }}
+            </div>
+            {% endif %}
+
+            <!-- INPUT FORM -->
+            <div class="card" style="margin-top:24px;">
+                <h3>Enter Your Current Skills</h3>
+                <p class="muted">
+                    Enter skills separated by commas (e.g., SQL, Python, Excel)
+                </p>
+
+                <form method="POST">
+                    <input
+                        type="text"
+                        name="skills"
+                        placeholder="SQL, Python, Excel"
+                        required
+                        style="width:100%;padding:12px;margin-top:12px;"
+                    />
+                    <button style="margin-top:14px;">Find Best Roles</button>
+                </form>
+            </div>
+
+            <!-- RECOMMENDATIONS -->
+            {% if recommendations %}
+            <div style="margin-top:36px;">
+                <h2>Recommended Roles</h2>
+
+                {% for rec in recommendations %}
+                <div class="card" style="margin-top:18px;">
+
+                    <h3>{{ rec.role }}</h3>
+
+                    <p>
+                        <strong>Match Score:</strong>
+                        {{ rec.match_score }}%
+                    </p>
+
+                    <!-- MATCH BAR -->
+                    <div style="height:10px;background:#e5e7eb;border-radius:6px;margin:10px 0;">
+                        <div style="
+                            width: {{ rec.match_score }}%;
+                            height:10px;
+                            background:linear-gradient(90deg,#22c55e,#16a34a);
+                            border-radius:6px;">
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:40px;margin-top:14px;flex-wrap:wrap;">
+
+                        <div>
+    <h4>📘 Skills to Learn</h4>
+
+    {% if rec.missing %}
+    <ul>
+        {% for skill in rec.missing %}
+        <li>
+            <strong>{{ skill }}</strong>
+
+            {% if rec.resources.get(skill) %}
+            <ul style="margin-top:6px;">
+                {% if rec.resources[skill].youtube %}
+                <li>📺 <a href="{{ rec.resources[skill].youtube }}" target="_blank">YouTube</a></li>
+                {% endif %}
+
+                {% if rec.resources[skill].docs %}
+                <li>📘 <a href="{{ rec.resources[skill].docs }}" target="_blank">Documentation</a></li>
+                {% endif %}
+
+                {% if rec.resources[skill].course %}
+                <li>🎓 <a href="{{ rec.resources[skill].course }}" target="_blank">Course</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="muted">You already match all skills 🎉</p>
+    {% endif %}
+</div>
+
+
+                        <div>
+                            <h4>📘 Skills to Learn</h4>
+                            {% if rec.missing %}
+                            <ul>
+                                {% for skill in rec.missing %}
+                                <li>{{ skill }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="muted">You already match all skills 🎉</p>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+    </main>
+
+</div>
+
+</body>
+</html>

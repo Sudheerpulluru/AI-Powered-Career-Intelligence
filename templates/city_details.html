@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ city }} Jobs | JobAI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="logo">🚀</span>
+            <span class="name">JobAI</span>
+        </div>
+
+        <nav class="nav">
+            <a href="/" class="nav-item">🏠 Home</a>
+            <a href="/dashboard" class="nav-item">📊 Dashboard</a>
+            <a href="/analytics" class="nav-item active">📈 Analytics</a>
+            <a href="/skill-gap" class="nav-item">🧠 Skill Gap</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+        <div class="page-container">
+
+            <h1 class="page-title">Job Demand in {{ city }}</h1>
+
+            {% if job_query %}
+            <div class="current-query">
+                🔍 <strong>Current Analysis:</strong> {{ job_query }}
+            </div>
+            {% endif %}
+
+            <div class="card" style="margin-top:28px;">
+                <h3>Search Records</h3>
+
+                {% if records %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Job Description</th>
+                            <th>City</th>
+                            <th>Demand Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in records %}
+                        <tr>
+                            <td>{{ row.description }}</td>
+                            <td>{{ row.city }}</td>
+                            <td>{{ row.prediction }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="muted">No records found for this city.</p>
+                {% endif %}
+            </div>
+
+            <div style="margin-top:24px;">
+                <a href="/analytics">
+                    <button class="secondary">← Back to Analytics</button>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+</body>
+</html>

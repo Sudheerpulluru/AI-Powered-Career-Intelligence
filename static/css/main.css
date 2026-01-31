@@ -1,0 +1,272 @@
+/* ==================================================
+   GLOBAL RESET
+================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ==================================================
+   THEME VARIABLES – AI DARK MODE
+================================================== */
+body.dark {
+  --bg-main: #0f172a;
+  --bg-card: #020617;
+  --primary: #6366f1;
+  --secondary: #22d3ee;
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+  --border-soft: #1e293b;
+  --shadow-soft: 0 10px 24px rgba(0,0,0,0.25);
+  --shadow-hover: 0 18px 40px rgba(0,0,0,0.35);
+}
+
+/* ==================================================
+   BASE
+================================================== */
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* ==================================================
+   LAYOUT
+================================================== */
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ==================================================
+   SIDEBAR
+================================================== */
+.sidebar {
+  width: 260px;
+  background: var(--bg-card);
+  border-right: 1px solid var(--border-soft);
+  padding: 24px 18px;
+}
+
+.sidebar .brand {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 26px;
+}
+
+/* ==================================================
+   NAVIGATION
+================================================== */
+.nav .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  transition: 0.2s ease;
+  font-weight: 500;
+}
+
+.nav .nav-item:hover {
+  background: rgba(99,102,241,0.12);
+}
+
+.nav .nav-item.active {
+  background: rgba(99,102,241,0.18);
+  color: #fff;
+}
+
+.nav .nav-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ==================================================
+   MAIN CONTENT
+================================================== */
+.main {
+  flex: 1;
+  padding: 32px;
+}
+
+/* ==================================================
+   PANELS / CARDS
+================================================== */
+.panel,
+.feature-card {
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.panel:hover,
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* ==================================================
+   HEADERS
+================================================== */
+.dashboard-header {
+  margin-bottom: 26px;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+  margin-top: 6px;
+  color: var(--text-muted);
+}
+
+/* ==================================================
+   BUTTONS
+================================================== */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* ==================================================
+   INPUTS
+================================================== */
+input,
+textarea,
+select {
+  background: #020617;
+  color: var(--text-main);
+  border: 1px solid var(--border-soft);
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.25);
+}
+
+/* ==================================================
+   CONTEXT PILLS
+================================================== */
+.context-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.context-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-soft);
+}
+
+/* ==================================================
+   TABLES
+================================================== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+}
+
+th {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 14px;
+}
+
+tbody tr:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+/* ==================================================
+   ANIMATIONS
+================================================== */
+.fade-in {
+  animation: fadeInUp 0.35s ease both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+
+  .main {
+    padding: 20px;
+  }
+}

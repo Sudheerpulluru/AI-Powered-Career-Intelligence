@@ -1,0 +1,9 @@
+CORRELATION ANALYSIS INSIGHTS
+
+1. A positive correlation is observed between skill count and job demand, indicating that roles requiring more skills tend to have higher demand.
+
+2. Skill complexity plays an important role in determining job stability and market value.
+
+3. Correlation analysis validates the feature engineering process and supports data-driven conclusions.
+
+4. These correlations help in understanding how skill requirements influence job market demand.

@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% block title %}Analytics | JobAI{% endblock %}
+
+{% block content %}
+
+{% if session.get("prediction_done") != True %}
+
+<div class="dashboard-header fade-in">
+  <h1>Career Analytics</h1>
+  <p class="text-muted">Run a job prediction to unlock analytics</p>
+</div>
+
+<section class="panel fade-in">
+  <h2>Analytics Locked</h2>
+  <p class="text-muted">
+    Analytics are generated only after a job demand prediction.
+  </p>
+  <a href="{{ url_for('dashboard') }}" class="btn-primary">
+    Run Prediction
+  </a>
+</section>
+
+{% else %}
+
+<style>
+  /* ================= KPI ================= */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin: 24px 0 36px;
+  }
+
+  .kpi-card {
+    padding: 22px;
+    border-radius: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-soft);
+  }
+
+  .kpi-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .kpi-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+  }
+
+  .kpi-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ================= GRID ================= */
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+    gap: 24px;
+    margin-top: 28px;
+  }
+
+  .explain {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  .chart-note {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 8px;
+  }
+</style>
+
+<!-- ================= HEADER ================= -->
+<div class="dashboard-header fade-in">
+  <h1>Career Analytics</h1>
+  <p class="text-muted">
+    Summary, explanation, and visual trends
+  </p>
+</div>
+
+<!-- ================= KPI SUMMARY ================= -->
+<div class="kpi-grid fade-in">
+  <div class="kpi-card">
+    <div class="kpi-label">Job Demand</div>
+    <div class="kpi-value">{{ session.demand }}</div>
+    <div class="kpi-sub">Overall market demand</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-label">Career Risk</div>
+    <div class="kpi-value">{{ session.career_risk }}</div>
+    <div class="kpi-sub">Stability & competition</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-label">AI Exposure</div>
+    <div class="kpi-value">{{ session.ai_probability }}%</div>
+    <div class="kpi-sub">Automation risk</div>
+  </div>
+
+  <div class="kpi-card">
+    <div class="kpi-label">Confidence</div>
+    <div class="kpi-value">{{ session.confidence }}%</div>
+    <div class="kpi-sub">Model certainty</div>
+  </div>
+</div>
+
+<!-- ================= INPUT SUMMARY ================= -->
+<section class="panel fade-in">
+  <h3>Prediction Context</h3>
+  <p><b>Role:</b> {{ session.user_input.jobtitle }}</p>
+  <p><b>Experience:</b> {{ session.user_input.experience_level }}</p>
+  <p><b>Skills:</b> {{ session.user_input.skills }}</p>
+</section>
+
+<!-- ================= AI EXPLANATION ================= -->
+<section class="panel fade-in">
+  <h2>How JobAI Reached This Result</h2>
+
+  <p class="explain">
+    JobAI combines a <b>machine learning model</b> with
+    <b>controlled rule-based logic</b> to produce stable,
+    interpretable career insights.
+  </p>
+
+  <ul class="explain">
+    <li>Demand inferred from role, experience, industry, and skills</li>
+    <li>Risk increases with volatility and competition</li>
+    <li>AI exposure estimates automation of repetitive tasks</li>
+  </ul>
+
+  <p class="explain">
+    These analytics support decision-making — they do not guarantee outcomes.
+  </p>
+</section>
+
+<!-- ================= VISUAL ANALYTICS ================= -->
+<section class="analytics-grid fade-in">
+
+  <div class="panel">
+    <h3>Job Demand Trend</h3>
+    <canvas id="trendChart"></canvas>
+    <div class="chart-note">Projected hiring demand</div>
+  </div>
+
+  <div class="panel">
+    <h3>Market Volatility</h3>
+    <canvas id="volatilityChart"></canvas>
+    <div class="chart-note">Hiring stability over time</div>
+  </div>
+
+  <div class="panel">
+    <h3>AI Automation Risk</h3>
+    <canvas id="aiChart"></canvas>
+    <div class="chart-note">Lower is safer</div>
+  </div>
+
+  <div class="panel" style="grid-column:1/-1;">
+    <h2>Final Career Insight</h2>
+    <p style="margin-top:12px;">
+      {{ session.career_decision }}
+    </p>
+  </div>
+
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const demandTrend = {{ session.demand_trend | tojson }};
+  const volatilityTrend = {{ session.volatility_trend | tojson }};
+  const aiRisk = {{ session.ai_probability | tojson }};
+
+  new Chart(document.getElementById("trendChart"), {
+    type: "line",
+    data: {
+      labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+      datasets: [{
+        data: demandTrend,
+        borderColor: "#6366f1",
+        backgroundColor: "rgba(99,102,241,0.25)",
+        fill: true,
+        tension: 0.35
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  new Chart(document.getElementById("volatilityChart"), {
+    type: "line",
+    data: {
+      labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+      datasets: [{
+        data: volatilityTrend,
+        borderColor: "#22d3ee",
+        backgroundColor: "rgba(34,211,238,0.25)",
+        fill: true,
+        tension: 0.35
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  new Chart(document.getElementById("aiChart"), {
+    type: "bar",
+    data: {
+      labels: ["AI Risk %"],
+      datasets: [{
+        data: [aiRisk],
+        backgroundColor: "#6366f1"
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true, max: 100 } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+});
+</script>
+
+{% endif %}
+{% endblock %}

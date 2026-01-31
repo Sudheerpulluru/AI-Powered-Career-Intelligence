@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Career Decision | JobAI</title>
+</head>
+<body>
+
+<h1>🚀 Career Decision Engine</h1>
+
+<form method="POST">
+  <label>Current Role:</label><br>
+  <input type="text" name="current_role" required><br><br>
+
+  <label>Target Role:</label><br>
+  <input type="text" name="target_role" required><br><br>
+
+  <button type="submit">Evaluate Decision</button>
+</form>
+
+{% if result %}
+<hr>
+<h2>{{ result.verdict }}</h2>
+<p><strong>Decision Score:</strong> {{ result.score }}</p>
+
+<ul>
+  {% for reason in result.reasons %}
+  <li>{{ reason }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+</body>
+</html>

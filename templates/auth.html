@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JobAI | Login</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+  <style>
+    body { overflow: hidden; }
+
+    .auth-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-card {
+      width: 460px;
+      padding: 38px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.15);
+      animation: fadeUp 0.4s ease;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 6px;
+      font-size: 1.8rem;
+    }
+
+    p.subtitle {
+      text-align: center;
+      opacity: 0.8;
+      margin-bottom: 24px;
+    }
+
+    .field {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      height: 52px;
+      padding: 14px 48px 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 15px;
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      opacity: 0.6;
+      font-size: 17px;
+    }
+
+    /* ===== CUSTOM CHECKBOX (FIX) ===== */
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      margin: 12px 0 6px;
+      opacity: 0.85;
+    }
+
+    .remember input {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      border: 1px solid var(--border-soft);
+      background: transparent;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .remember input:checked {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .remember input:checked::after {
+      content: "✓";
+      position: absolute;
+      color: #fff;
+      font-size: 12px;
+      left: 4px;
+      top: 0px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .google-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 14px;
+      border: 1px solid var(--border-soft);
+      opacity: 0.45;
+      cursor: not-allowed;
+      font-size: 14px;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 18px 0;
+      font-size: 13px;
+      opacity: 0.6;
+    }
+
+    .switch,
+    .guest {
+      text-align: center;
+      margin-top: 14px;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    .switch a,
+    .guest a {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(14px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+
+<body class="dark">
+
+<div class="auth-wrap">
+  <div class="auth-card">
+
+    <h1>☕ JobAI</h1>
+    <p class="subtitle">Welcome back</p>
+
+    {% if error %}
+      <p style="color:#ff6b6b;text-align:center;margin-bottom:12px;">
+        {{ error }}
+      </p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+
+      <div class="field">
+        <input type="email" name="email" placeholder="Email address" required>
+      </div>
+
+      <div class="field">
+        <input type="password" name="password" placeholder="Password" required>
+        <span class="toggle-eye" onclick="togglePassword(this)">👁</span>
+      </div>
+
+      <label class="remember">
+        <input type="checkbox" name="remember">
+        Remember me
+      </label>
+
+      <button class="btn-primary">Login</button>
+
+      <div class="google-btn" title="Google login planned in Phase-2">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
+        Continue with Google
+      </div>
+
+    </form>
+
+    <div class="divider">or</div>
+
+    <div class="switch">
+      Don’t have an account?
+      <a href="{{ url_for('signup') }}">Create one</a>
+    </div>
+
+    <div class="guest">
+      <a href="{{ url_for('guest_login') }}">Continue as Guest</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function togglePassword(el) {
+  const input = el.previousElementSibling;
+  input.type = input.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

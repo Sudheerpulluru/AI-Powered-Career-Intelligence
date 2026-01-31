@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Skill Gap | JobAI{% endblock %}
+
+{% block content %}
+
+{% if session.get("prediction_done") != True %}
+
+<div class="dashboard-header fade-in">
+  <h1>Skill Gap Analysis</h1>
+  <p class="text-muted">
+    Run a job prediction to unlock personalized skill insights
+  </p>
+</div>
+
+<section class="panel fade-in">
+  <h2>Skill Gap Locked</h2>
+  <p class="text-muted">
+    Skill recommendations are generated only after analyzing a job role.
+  </p>
+  <a href="{{ url_for('dashboard') }}" class="btn-primary">
+    Run Prediction
+  </a>
+</section>
+
+{% else %}
+
+<style>
+  /* ================= TAGS ================= */
+  .skill-tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .tag {
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .tag.critical { background: #ef4444; }
+  .tag.missing  { background: #f59e0b; }
+  .tag.highroi  { background: #22c55e; }
+
+  .section-gap {
+    margin-top: 32px;
+  }
+
+  .explain {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+</style>
+
+<!-- ================= HEADER ================= -->
+<div class="dashboard-header fade-in">
+  <h1>Skill Gap Intelligence</h1>
+  <p class="text-muted">
+    Prioritized skill recommendations based on demand, risk, and future impact
+  </p>
+</div>
+
+<!-- ================= CONTEXT ================= -->
+<section class="panel fade-in">
+  <div class="context-bar">
+    <div class="context-pill">
+      Role: {{ session.user_input.get("jobtitle","-") }}
+    </div>
+    <div class="context-pill">
+      Demand: {{ session.demand }}
+    </div>
+    <div class="context-pill">
+      Risk: {{ session.career_risk }}
+    </div>
+  </div>
+</section>
+
+{% set ROLE_SKILLS = {
+  "data analyst": {
+    "critical": ["SQL","Python","Excel"],
+    "recommended": ["Power BI","Statistics"]
+  },
+  "data engineer": {
+    "critical": ["Python","SQL","Spark"],
+    "recommended": ["Hadoop","AWS","ETL"]
+  },
+  "data scientist": {
+    "critical": ["Python","Statistics","Machine Learning"],
+    "recommended": ["SQL","Data Visualization"]
+  },
+  "software engineer": {
+    "critical": ["Data Structures","System Design"],
+    "recommended": ["Git","Testing"]
+  },
+  "ai engineer": {
+    "critical": ["Python","Machine Learning","Deep Learning"],
+    "recommended": ["MLOps","Cloud"]
+  }
+} %}
+
+{% set role = session.user_input.get("jobtitle","") | lower | trim %}
+{% set role_data = ROLE_SKILLS.get(role) %}
+
+{% set raw_skills = session.user_input.get("skills","") | lower %}
+{% set user_skills = raw_skills
+  | replace("powerbi","power bi")
+  | replace("mlops","ml ops")
+  | replace("ds","data structures")
+%}
+
+{% if not role_data %}
+
+<section class="panel section-gap fade-in">
+  <h2>Skill Mapping Not Available</h2>
+  <p class="text-muted">
+    We don’t yet have a structured skill framework for
+    <b>{{ session.user_input.get("jobtitle","this role") }}</b>.
+  </p>
+  <p class="text-muted">
+    Try a standard role (e.g., Data Analyst, Software Engineer)
+    or continue with general skill development.
+  </p>
+</section>
+
+{% else %}
+
+{% set critical = role_data.critical %}
+{% set recommended = role_data.recommended %}
+
+<!-- ================= CRITICAL ================= -->
+<section class="panel section-gap fade-in">
+  <h2>Critical Skill Gaps</h2>
+  <p class="explain">
+    These skills are essential. Missing them significantly increases career risk.
+  </p>
+
+  {% set ns = namespace(found=false) %}
+  <div class="skill-tags">
+    {% for skill in critical %}
+      {% if skill | lower not in user_skills %}
+        {% set ns.found = true %}
+        <span class="tag critical">{{ skill }}</span>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if not ns.found %}
+    <p class="text-muted">You already meet all critical skill requirements.</p>
+  {% endif %}
+</section>
+
+<!-- ================= RECOMMENDED ================= -->
+<section class="panel section-gap fade-in">
+  <h2>Recommended Skills</h2>
+  <p class="explain">
+    These skills improve demand stability and salary growth.
+  </p>
+
+  <div class="skill-tags">
+    {% for skill in recommended %}
+      {% if skill | lower not in user_skills %}
+        <span class="tag missing">{{ skill }}</span>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ================= HIGH ROI ================= -->
+<section class="panel section-gap fade-in">
+  <h2>High-ROI (Future-Proof) Skills</h2>
+  <p class="explain">
+    These skills reduce AI exposure and support long-term career growth.
+  </p>
+
+  <div class="skill-tags">
+    <span class="tag highroi">System Design</span>
+    <span class="tag highroi">Cloud Computing</span>
+    <span class="tag highroi">MLOps</span>
+    <span class="tag highroi">AI Engineering</span>
+  </div>
+</section>
+
+<!-- ================= STRATEGY ================= -->
+<section class="panel section-gap fade-in">
+  <h2>Skill Strategy</h2>
+  <p class="explain">
+    1. Fix <b>critical gaps</b> first<br>
+    2. Add <b>recommended skills</b> next<br>
+    3. Build <b>high-ROI skills</b> alongside real-world experience
+  </p>
+</section>
+
+{% endif %}
+{% endif %}
+{% endblock %}
